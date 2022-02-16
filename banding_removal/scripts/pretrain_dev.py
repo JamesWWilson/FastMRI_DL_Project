@@ -1,3 +1,10 @@
+"""
+Copyright (c) Facebook, Inc. and its affiliates.
+
+This source code is licensed under the MIT license found in the
+LICENSE file in the root directory of this source tree.
+"""
+
 import pathlib
 import sys
 from getpass import getuser
@@ -7,25 +14,27 @@ from fastmri import run, spawn_dist
 
 config = {
     'run_name': pathlib.Path(__file__).stem,
-    'data_path': '/datasets01/fastMRI/112718', #SET
+    'data_path': '/datasets01/fastMRI/112718',
     'trainer_class': 'fastmri.var_net.var_net_trainer.VarNetTrainer',
     'architecture': 'var_net.var_net',
     'data_transform': 'kspace.KSpaceDataTransform',
 
-    'method_str': "12[SoftDC(cunet(18,2)),]IFT(),RSS()",
+    'method_str': "6[SoftDC(cunet(18,2)),]IFT(),RSS()",
     'sens_method_str': 'MaskCenter(),IFT(),Fm2Batch(cunet(8,2)),dRSS()',
-    'mask_type': 'magic',
+    'mask_type': 'magic', # Key change
 
     'ssim_loss': True,
+    'ssim_l1_coefficient': 0.01,
     'epochs': 100,
-
-    'calculate_offsets_directly': True,
 
     'batch_size': 1,
     'method': 'adam',
-    'lr': 0.0001, # LR based on 6/8 gpus, adjust if using fewer
+    'lr': 0.0001,
 
-    'workers': 1,
+    #'nan_detection': True,
+    'calculate_offsets_directly': True,
+
+    'workers': 0,
 
     'filter_acceleration': 1,
     'min_kspace_width': None,
@@ -47,35 +56,15 @@ config = {
     'train_num_low_frequencies': [16],
 
     'initialization': 'none',
+    'sync_params': False,
 
     'log_interval': 10,
-    'visual_first_epoch': True,
-    'display_count': 8,
-
-    # After pretraining, link to pretrained model file here
-    'checkpoint_type': "restart",
-    'checkpoint': f'{pathlib.Path.home()}/pretrained_lowt_4x.mdl',
+    'visual_first_epoch': False,
 
     'orientation_augmentation': True,
-    'orientation_adversary': True,
-
-    'calculate_offsets_directly': True,
-
-    'adversary_model': 'shallow',
-    'adversary_epoch_from': 0,
-    'warmup_adversary_from': 0,
-    'adversary_strength': 1,
-
-    'reg_param': 0.1,
-    'adversary_weight_decay': 0.0,
-    'ssim_l1_coefficient': 0.01,
-    'number_of_adversaries': 1,
-    'seed': 42,
-
-    'evaluate': False,
-    'short_epochs': True, # 20% epochs
-    'epochs': 1000,
+    'orientation_adversary': False,
 }
 
 if __name__ == "__main__":
-    spawn_dist.run(config) # Multiple GPU training (6-8 recommended)
+    #spawn_dist.run(config) # Multiple GPU training (8 recommended)
+    run.run(config) # Single GPU training (for debugging)

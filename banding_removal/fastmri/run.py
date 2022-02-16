@@ -3,6 +3,7 @@ import sys
 import multiprocessing
 import os
 import logging
+import traceback
 
 sys.path.append(sys.path[0] + "/..")
 __package__ = "fastmri"
@@ -29,7 +30,12 @@ def run(args=None):
     except KeyboardInterrupt:
         pass # Hide traceback
     except Exception as e:
-        logging.exception("Uncaught exception")
+        logging.exception("Uncaught exception (log)")
+        print("Uncaught exception (print)")
+        print(traceback.format_exc())
+        sys.stdout.flush()
+        sys.stderr.flush()
+        logging.shutdown()
         raise
 
 

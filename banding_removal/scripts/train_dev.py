@@ -1,3 +1,10 @@
+"""
+Copyright (c) Facebook, Inc. and its affiliates.
+
+This source code is licensed under the MIT license found in the
+LICENSE file in the root directory of this source tree.
+"""
+
 import pathlib
 import sys
 from getpass import getuser
@@ -7,7 +14,7 @@ from fastmri import run, spawn_dist
 
 config = {
     'run_name': pathlib.Path(__file__).stem,
-    'data_path': '/datasets01/fastMRI/112718', #SET
+    'data_path': '/datasets01/fastMRI/112718', #SET 
     'trainer_class': 'fastmri.var_net.var_net_trainer.VarNetTrainer',
     'architecture': 'var_net.var_net',
     'data_transform': 'kspace.KSpaceDataTransform',
@@ -17,15 +24,14 @@ config = {
     'mask_type': 'magic',
 
     'ssim_loss': True,
-    'epochs': 100,
+
+    'batch_size': 1, # Larger batches are not supported
+    'method': 'adam',
+    'lr': 0.0001, # Adjust based on number of gpus
 
     'calculate_offsets_directly': True,
 
-    'batch_size': 1,
-    'method': 'adam',
-    'lr': 0.0001, # LR based on 6/8 gpus, adjust if using fewer
-
-    'workers': 1,
+    'workers': 0, # Process data in main process for debugging purposes
 
     'filter_acceleration': 1,
     'min_kspace_width': None,
@@ -49,7 +55,7 @@ config = {
     'initialization': 'none',
 
     'log_interval': 10,
-    'visual_first_epoch': True,
+    'visual_first_epoch': False,
     'display_count': 8,
 
     # After pretraining, link to pretrained model file here
@@ -58,8 +64,6 @@ config = {
 
     'orientation_augmentation': True,
     'orientation_adversary': True,
-
-    'calculate_offsets_directly': True,
 
     'adversary_model': 'shallow',
     'adversary_epoch_from': 0,
@@ -70,12 +74,11 @@ config = {
     'adversary_weight_decay': 0.0,
     'ssim_l1_coefficient': 0.01,
     'number_of_adversaries': 1,
-    'seed': 42,
 
     'evaluate': False,
-    'short_epochs': True, # 20% epochs
+    'short_epochs': True, # 20% epochs to avoid memory issues
     'epochs': 1000,
 }
 
 if __name__ == "__main__":
-    spawn_dist.run(config) # Multiple GPU training (6-8 recommended)
+    run.run(config) # Single GPU training for debugging only
