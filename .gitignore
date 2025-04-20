@@ -1,3 +1,15 @@
+.DS_Store
+
+# fastMRI data (e.g., h5 files, raw tar.gz, reconstructions)
+*.h5
+*.tar.gz
+reconstructions/
+fastmri_data/
+data/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
 __pycache__
 .vscode
 experiments
